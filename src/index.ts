@@ -134,5 +134,3 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
 export function configMultiple(configs: SafeEnvConfig[] = []): SafeEnvResult[] {
   return configs.map(cfg => config(cfg));
 }
-
-config({ strict: true }); // Auto-load on import with non-strict mode
