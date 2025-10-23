@@ -29,7 +29,7 @@ export default {
   },
 
   // Test file patterns
-  testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/src/**/__tests__/**/*.ts'],
+  testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/tests/**/*.ts'],
 
   // Module name mapping for ESM imports
   moduleNameMapper: {
