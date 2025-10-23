@@ -3,7 +3,7 @@
   "description": "Safe .env loader that validates environment variables against a documented example file",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bennyh960/NPM_dotenvSafer.git"
+    "url": "git+https://github.com/bennyh960/NPM_dotenvSafer.git"
   },
   "homepage": "https://github.com/bennyh960/NPM_dotenvSafer.git",
   "version": "0.0.2",
