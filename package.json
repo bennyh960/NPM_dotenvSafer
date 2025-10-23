@@ -1,14 +1,21 @@
 {
   "name": "dotenv-safer",
-  "description": "",
+  "description": "Safe .env loader that validates environment variables against a documented example file",
   "repository": {
     "type": "git",
-    "url": "todo"
+    "url": "https://github.com/bennyh960/NPM_dotenvSafer.git"
   },
+  "homepage": "https://github.com/bennyh960/NPM_dotenvSafer.git",
   "version": "0.0.1",
   "author": "bennyh960",
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "dotenv",
+    "env",
+    "environment",
+    "validation",
+    "safe-env"
+  ],
   "type": "module",
   "types": "dist/index.d.ts",
   "main": "index.js",

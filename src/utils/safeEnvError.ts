@@ -33,4 +33,13 @@ export class SafeEnvError extends Error {
 
     return `${header}\n${msg}${code}${context}${hint}\n`;
   }
+
+  notify(strictMode?: boolean) {
+    if (strictMode) {
+      throw this;
+    } else {
+      const warning = this.toString().replace('❌ safeEnv Error:', '⚠️  safeEnv Warning: (strict mode = false) ');
+      console.warn(warning);
+    }
+  }
 }

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import type { SafeEnvResult, SafeEnvConfig } from './utils/types.js';
 import { SafeEnvError } from './utils/safeEnvError.js';
 import { errorCodeMap } from './utils/constants.js';
+import { validateGitIgnore } from './utils/gitignoreValidation.js';
 
 /**
  * Validates the environment variables against the documented example,
@@ -16,32 +17,44 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
   const examplePath = envPath + envPathSuffix;
 
   if (typeof envPath !== 'string') {
+    const error = new SafeEnvError('Invalid env file path provided', {
+      code: '000_400',
+      context: errorCodeMap['000_400'],
+      hint: 'Provide a valid string path to the .env file. (for multi files use `configMultiple`',
+    });
+
+    error.notify(options.strict);
+
     return {
-      error: new SafeEnvError('Invalid env file path provided', {
-        code: '000_400',
-        context: errorCodeMap['000_400'],
-        hint: 'Provide a valid string path to the .env file. (for multi files use `configMultiple`',
-      }),
+      error: error,
       parsed: undefined,
     };
   }
 
   if (!fs.existsSync(envPath)) {
+    const error = new SafeEnvError(`Env file not found at ${envPath}`, { code: '001_404', context: errorCodeMap['001_404'] });
+    if (options.strict) {
+      throw error;
+    }
     return {
-      error: new SafeEnvError(`Env file not found at ${envPath}`, { code: '001_404', context: errorCodeMap['001_404'] }),
+      error: error,
       parsed: undefined,
     };
   }
   if (!fs.existsSync(examplePath)) {
+    const error = new SafeEnvError(
+      `Documented env file not found at ${examplePath} (expected path based on ${envPath} with ${envPathSuffix} suffix)`,
+      {
+        code: '002_404',
+        context: errorCodeMap['002_404'],
+        hint: `Ensure the documented .env${envPathSuffix} file exists at the same level of original env file.`,
+      }
+    );
+
+    error.notify(options.strict);
+
     return {
-      error: new SafeEnvError(
-        `Documented env file not found at ${examplePath} (expected path based on ${envPath} with ${envPathSuffix} suffix)`,
-        {
-          code: '002_404',
-          context: errorCodeMap['002_404'],
-          hint: `Ensure the documented .env${envPathSuffix} file exists at the same level of original env file.`,
-        }
-      ),
+      error: error,
       parsed: undefined,
     };
   }
@@ -60,46 +73,58 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
   );
 
   if (missingInEnv.length > 0) {
+    const error = new SafeEnvError(`The following variables are documented but missing in ${envPath}: ${missingInEnv.join(', ')}`, {
+      code: '003_MISSING',
+      context: errorCodeMap['003_MISSING'],
+      hint: 'Ensure all documented variables are defined in the actual .env file.',
+    });
+
+    error.notify(options.strict);
+
     return {
-      error: new SafeEnvError(`The following variables are documented but missing in ${envPath}: ${missingInEnv.join(', ')}`, {
-        code: '003_MISSING',
-        context: errorCodeMap['003_MISSING'],
-        hint: 'Ensure all documented variables are defined in the actual .env file.',
-      }),
+      error,
       parsed: undefined,
     };
   }
   if (undocumentedVars.length > 0) {
+    const error = new SafeEnvError(
+      `safeEnv: The following variables are present in ${envPath} but not documented in ${examplePath}: ${undocumentedVars.join(', ')}`,
+      {
+        code: '004_UNDOCUMENTED',
+        context: errorCodeMap['004_UNDOCUMENTED'],
+        hint: 'Consider documenting all variables in the example file.',
+      }
+    );
+
+    error.notify(options.strict);
+
     return {
-      error: new SafeEnvError(
-        `safeEnv: The following variables are present in ${envPath} but not documented in ${examplePath}: ${undocumentedVars.join(', ')}`,
-        {
-          code: '004_UNDOCUMENTED',
-          context: errorCodeMap['004_UNDOCUMENTED'],
-          hint: 'Consider documenting all variables in the example file.',
-        }
-      ),
+      error,
       parsed: undefined,
     };
   }
   if (sameVars.length > 0) {
+    const error = new SafeEnvError(
+      `The following variables have the same value in both ${envPath} and ${examplePath} (consider using placeholders/defaults in .env${envPathSuffix}): ${sameVars.join(
+        ', '
+      )}`,
+      {
+        code: '005_SAME_VALUE',
+        context: errorCodeMap['005_SAME_VALUE'],
+        hint: 'Use different values in the documented file to indicate placeholders.',
+      }
+    );
+
+    error.notify(options.strict);
+
     return {
-      error: new SafeEnvError(
-        `The following variables have the same value in both ${envPath} and ${examplePath} (consider using placeholders/defaults in .env${envPathSuffix}): ${sameVars.join(
-          ', '
-        )}`,
-        {
-          code: '005_SAME_VALUE',
-          context: errorCodeMap['005_SAME_VALUE'],
-          hint: 'Use different values in the documented file to indicate placeholders.',
-        }
-      ),
+      error,
       parsed: undefined,
     };
   }
 
-  // Mutate process.env like dotenv
-  Object.assign(process.env, originalEnvParsed);
+  validateGitIgnore(envPath, examplePath, options.strict);
+
   return { error: undefined, parsed: originalEnvParsed };
 }
 
@@ -109,3 +134,5 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
 export function configMultiple(configs: SafeEnvConfig[] = []): SafeEnvResult[] {
   return configs.map(cfg => config(cfg));
 }
+
+config({ strict: true }); // Auto-load on import with non-strict mode

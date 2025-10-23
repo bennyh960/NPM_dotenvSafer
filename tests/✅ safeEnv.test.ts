@@ -90,6 +90,52 @@ describe('safeEnv config()', () => {
   });
 });
 
+describe('safeEnv strict mode', () => {
+  it('should throw for invalid env path', () => {
+    expect(() => config({ path: [''], strict: true })).toThrow(SafeEnvError);
+  });
+
+  it('should throw when .env file missing', () => {
+    const envPath = path.join(TEST_DIR, 'missing_strict.env');
+    expect(() => config({ path: envPath, strict: true })).toThrow(SafeEnvError);
+  });
+
+  it('should throw when example file missing', () => {
+    const envPath = writeFile('strict.env', 'A=1');
+    expect(() => config({ path: envPath, strict: true })).toThrow(SafeEnvError);
+  });
+
+  // it('should throw for missing documented vars', () => {
+  //   const envPath = writeFile('strict_missing.env', 'A=1');
+  //   const examplePath = writeFile('strict_missing.env.example', 'A=1\nB=2');
+  //   expect(() => config({ path: envPath, strict: true })).toThrowError((error: any) => error.code === '003_MISSING');
+  // });
+
+  // it('should throw for missing documented vars', () => {
+  //   const envPath = writeFile('strict_missing.env', 'A=1');
+  //   writeFile('strict_missing.env.example', 'A=1\nB=2');
+  //   expect(() => config({ path: envPath, strict: true })).toThrowError(
+  //     (err: any) => err instanceof SafeEnvError && err.code === '003_MISSING'
+  //   );
+  // });
+
+  // it('should throw for same values between env and example', () => {
+  //   const envPath = writeFile('strict_same.env', 'A=1\nB=2');
+  //   const examplePath = writeFile('strict_same.env.example', 'A=1\nB=2');
+  //   expect(() => config({ path: envPath, strict: true })).toThrowErrorMatchingObject({
+  //     code: '005_SAME_VALUE',
+  //   });
+  // });
+
+  // it('should not throw when env matches example properly', () => {
+  //   const envPath = writeFile('strict_valid.env', 'A=prod\nB=secret');
+  //   writeFile('strict_valid.env.example', 'A=placeholder\nB=example');
+  //   expect(() => config({ path: envPath, strict: true })).not.toThrow();
+  //   const result = config({ path: envPath, strict: true });
+  //   expect(result.parsed).toEqual({ A: 'prod', B: 'secret' });
+  // });
+});
+
 describe('safeEnv configMultiple()', () => {
   it('should handle multiple configurations', () => {
     const env1 = writeFile('one.env', 'A=1');

@@ -4,6 +4,7 @@ import type { SafeEnvError } from './safeEnvError.js';
 
 type safeEnvCustomConfig = {
   pathSuffix?: string;
+  strict?: boolean;
 };
 
 export type SafeEnvConfig = DotenvConfigOptions & safeEnvCustomConfig;
