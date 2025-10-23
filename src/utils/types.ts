@@ -1,5 +1,6 @@
 import type { DotenvConfigOptions } from 'dotenv';
 import type { errorCodeMap } from './constants.js';
+import type { SafeEnvError } from './safeEnvError.js';
 
 type safeEnvCustomConfig = {
   pathSuffix?: string;
@@ -9,7 +10,7 @@ export type SafeEnvConfig = DotenvConfigOptions & safeEnvCustomConfig;
 
 /** Result mimics Dotenv config return */
 export interface SafeEnvResult {
-  error?: Error;
+  error?: SafeEnvError;
   parsed?: Record<string, string>;
 }
 

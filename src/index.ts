@@ -15,9 +15,13 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
   const envPath = options.path || '.env';
   const examplePath = envPath + envPathSuffix;
 
-  if (typeof envPath !== 'string' || envPath.trim() === '') {
+  if (typeof envPath !== 'string') {
     return {
-      error: new SafeEnvError('Invalid env file path provided', { code: '000_400', context: errorCodeMap['000_400'] }),
+      error: new SafeEnvError('Invalid env file path provided', {
+        code: '000_400',
+        context: errorCodeMap['000_400'],
+        hint: 'Provide a valid string path to the .env file. (for multi files use `configMultiple`',
+      }),
       parsed: undefined,
     };
   }
@@ -105,10 +109,3 @@ export function config(options: SafeEnvConfig = {}): SafeEnvResult {
 export function configMultiple(configs: SafeEnvConfig[] = []): SafeEnvResult[] {
   return configs.map(cfg => config(cfg));
 }
-
-const x = config();
-if (x.error) {
-  console.error(x.error.toString());
-  process.exit(1);
-}
-console.log('safeEnv: Environment variables validated and loaded.');

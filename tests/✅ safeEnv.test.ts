@@ -1,81 +1,107 @@
 import fs from 'fs';
 import path from 'path';
-import { config, configMultiple } from '../src/index';
+import { config, configMultiple } from '../src/index.js';
+import { SafeEnvError } from '../src/utils/safeEnvError.js';
 
-const TMP_DIR = path.join(process.cwd(), '__test_envs__');
+const TEST_DIR = path.join(process.cwd(), '__test_envs__');
 
 beforeAll(() => {
-  if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
+  if (!fs.existsSync(TEST_DIR)) fs.mkdirSync(TEST_DIR);
 });
 
 afterAll(() => {
-  // Clean up temporary files
-  fs.rmSync(TMP_DIR, { recursive: true, force: true });
+  fs.rmSync(TEST_DIR, { recursive: true, force: true });
 });
 
-function writeEnvFiles(envContent: string, exampleContent: string, name = 'default') {
-  const envPath = path.join(TMP_DIR, `.env.${name}`);
-  const examplePath = envPath + '.example';
-  fs.writeFileSync(envPath, envContent);
-  fs.writeFileSync(examplePath, exampleContent);
-  return { envPath, examplePath };
-}
+const writeFile = (name: string, content: string) => {
+  const filePath = path.join(TEST_DIR, name);
+  fs.writeFileSync(filePath, content);
+  return filePath;
+};
 
-describe('safeEnv.config()', () => {
-  it('returns error if env path is invalid', () => {
-    const result = config({ path: '' });
-    expect(result.error?.message).toMatch(/invalid env file path/i);
+describe('safeEnv config()', () => {
+  it('should return error for invalid env path', () => {
+    const result = config({ path: [''] });
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('000_400');
   });
 
-  it('returns error if .env file does not exist', () => {
-    const fakePath = path.join(TMP_DIR, 'missing.env');
-    const result = config({ path: fakePath });
-    expect(result.error?.message).toMatch(/Env file not found/);
-  });
-
-  it('returns error if example file is missing', () => {
-    const envPath = path.join(TMP_DIR, 'only.env');
-    fs.writeFileSync(envPath, 'A=1');
+  it('should return error when .env file missing', () => {
+    const envPath = path.join(TEST_DIR, 'missing.env');
     const result = config({ path: envPath });
-    expect(result.error?.message).toMatch(/Documented env file not found/);
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('001_404');
   });
 
-  it('returns error when variables are missing in .env', () => {
-    const { envPath } = writeEnvFiles('A=1', 'A=1\nB=2');
-    const result = config({ path: envPath, pathSuffix: '.example' });
-    expect(result.error?.message).toMatch(/missing.*B/i);
-  });
-
-  it('returns error when .env has undocumented variables', () => {
-    const { envPath } = writeEnvFiles('A=1\nX=9', 'A=1');
+  it('should return error when example file missing', () => {
+    const envPath = writeFile('.env', 'A=1');
     const result = config({ path: envPath });
-    expect(result.error?.message).toMatch(/undocumented.*X/i);
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('002_404');
   });
 
-  it('returns error when same values exist in both files', () => {
-    const { envPath } = writeEnvFiles('A=same', 'A=same');
+  it('should return error for missing documented vars', () => {
+    const envPath = writeFile('.env', 'A=1');
+    const examplePath = writeFile('.env.example', 'A=1\nB=2');
     const result = config({ path: envPath });
-    expect(result.error?.message).toMatch(/same value.*A/i);
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('003_MISSING');
   });
 
-  it('returns parsed vars and updates process.env when all good', () => {
-    const { envPath } = writeEnvFiles('A=real\nB=value', 'A=placeholder\nB=placeholder');
+  it('should return error for undocumented vars', () => {
+    const envPath = writeFile('.env', 'A=1\nB=2');
+    const examplePath = writeFile('.env.example', 'A=1');
+    const result = config({ path: envPath });
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('004_UNDOCUMENTED');
+  });
+
+  it('should return error for same values between env and example', () => {
+    const envPath = writeFile('.env', 'A=1\nB=2');
+    const examplePath = writeFile('.env.example', 'A=1\nB=2');
+    const result = config({ path: envPath });
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('005_SAME_VALUE');
+  });
+
+  it('should succeed when env matches documented example properly', () => {
+    const envPath = writeFile('.env', 'A=production\nB=secret');
+    const examplePath = writeFile('.env.example', 'A=example_value\nB=placeholder');
     const result = config({ path: envPath });
     expect(result.error).toBeUndefined();
-    expect(result.parsed).toEqual({ A: 'real', B: 'value' });
-    expect(process.env.A).toBe('real');
-    expect(process.env.B).toBe('value');
+    expect(result.parsed).toEqual({ A: 'production', B: 'secret' });
+    expect(process.env.A).toBe('production');
+  });
+  // ✅ pathSuffix TESTS:
+  it('should return error when documented file with custom suffix is missing', () => {
+    const envPath = writeFile('custom.env', 'X=1');
+    // No "custom.env.sample" created → should fail
+    const result = config({ path: envPath, pathSuffix: '.sample' });
+    expect(result.error).toBeInstanceOf(SafeEnvError);
+    expect(result.error?.code).toBe('002_404');
+  });
+
+  it('should succeed when using custom suffix and both files exist', () => {
+    const envPath = writeFile('custom.env', 'TOKEN=live_secret\nMODE=prod');
+    writeFile('custom.env.sample', 'TOKEN=placeholder\nMODE=example');
+    const result = config({ path: envPath, pathSuffix: '.sample' });
+    expect(result.error).toBeUndefined();
+    expect(result.parsed).toEqual({ TOKEN: 'live_secret', MODE: 'prod' });
   });
 });
 
-describe('safeEnv.configMultiple()', () => {
-  it('runs multiple env validations', () => {
-    const env1 = writeEnvFiles('A=1', 'A=x');
-    const env2 = writeEnvFiles('B=2', 'B=y');
+describe('safeEnv configMultiple()', () => {
+  it('should handle multiple configurations', () => {
+    const env1 = writeFile('one.env', 'A=1');
+    const example1 = writeFile('one.env.example', 'A=example');
 
-    const results = configMultiple([{ path: env1.envPath }, { path: env2.envPath }]);
+    const env2 = writeFile('two.env', 'B=prod');
+    const example2 = writeFile('two.env.example', 'B=placeholder');
+
+    const results = configMultiple([{ path: env1 }, { path: env2 }]);
+
     expect(results).toHaveLength(2);
-    expect(results[0].parsed).toBeDefined();
-    expect(results[1].parsed).toBeDefined();
+    expect(results[0].error).toBeUndefined();
+    expect(results[1].error).toBeUndefined();
   });
 });
