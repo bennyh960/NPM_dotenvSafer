@@ -1,19 +1,24 @@
 # safe-env-validator
 
-A minimal, TypeScript-first validator and loader for environment files (`.env`) inspired by
-[dotenv](https://www.npmjs.com/package/dotenv), ensuring your environment variables are documented
-and safe—**the missing validation layer for Node.js apps**.
+A minimal, TypeScript-first library built as an extension of
+[dotenv](https://www.npmjs.com/package/dotenv) , adding validation and documentation checks for your
+environment files (.env), so your Node.js apps stay safe and **the missing validation layer for
+Node.js apps**.
 
 ---
 
 ## 🚀 Features
 
-- **Strict validation:** Ensures all documented vars (`.env.example`) are present in real `.env`
-  file.
-- **Detects mistakes:** Flags undocumented, missing, and identical-value variables.
-- **Dotenv-compatible:** Mimics `dotenv.config({ ... })` for seamless adoption.
+- **Strict validation:** Ensures all documented variables (`.env.example`) exist in the actual
+  `.env` file and vice versa.
+- **Mistake detection:** Flags undocumented, missing, or identical-value variables.
+- **Dotenv-compatible:** Uses original `dotenv.config({ ... })` for seamless adoption in existing
+  projects.
 - **Zero dependencies:** Only relies on `dotenv` and Node.js core modules.
-- **TypeScript-native:** Strong types, full autocomplete in editors.
+- **TypeScript-native:** Provides strong types and full autocomplete in editors.
+- **Strict mode:** Optional mode to throw errors or exit the process if validation fails.
+- **Gitignore validation:** Ensures `.env` is ignored in Git while `.env.example` is included,
+  helping teams avoid committing secrets.
 
 ---
 
@@ -27,6 +32,16 @@ yarn add safe-env-validator dotenv
 
 ## 🛠️ Usage
 
+### Before you start
+
+- Place your `.env` and `.env.example` files in your project root.
+- Ensure you have a `.gitignore` file:
+  - Add your `.env` file to `.gitignore`.
+  - Do **not** include `.env.example` in `.gitignore`.
+
+> For convenience, the default file names are `.env` and `.env.example`, but you can use custom
+> names if desired.
+
 ### Basic validation (TypeScript or CommonJS)
 
 ```typescript
@@ -38,7 +53,8 @@ const result = config({ path: './.env' });
 if (result.error) {
   throw result.error;
 }
-// result.parsed is your validated env variables.
+
+// result.parsed contains your validated environment variables
 ```
 
 ### Multi-file validation
@@ -51,8 +67,8 @@ const results = configMultiple([{ path: './.env' }, { path: './.db.env' }]);
 
 ### Custom paths
 
-- By default, validates .env and .env.example.
-- Set path to validate ./.backend.env and ./.backend.env.example, etc.
+- By default, validates `.env` and `.env.example`.
+- You can set a custom path to validate files like `./.backend.env` and `./.backend.env.example`.
 
 ---
 
@@ -60,21 +76,21 @@ const results = configMultiple([{ path: './.env' }, { path: './.db.env' }]);
 
 ### SafeEnvConfig
 
-- same as original SafeEnvConfig
-- extend custom variables :
-- pathSuffix: string , keep your desired env doc name such as .env.docs or .env.template etc...
-  (default : .example)
+- Inherits all original `SafeEnvConfig` options from `dotenv` package.
+- Adds custom variables:
+  - `pathSuffix: string` — Specify your documented env file name, e.g., `.env.docs` or
+    `.env.template`. (Default: `.example`)
+  - `strict: boolean` — Default: `false`. If `true`, validation errors will throw instead of
+    returning them.
 
-### config(options?: SafeEnvConfig): SafeEnvResult
+### `config(options?: SafeEnvConfig): SafeEnvResult`
 
-- <b>options.path:</b> Path to your env file (.env, .redis.env, etc.)
-- <b>returns:</b> { error?: Error, parsed?: Record<string, string> }
+- **options.path:** Path to your env file (e.g., `.env`, `.redis.env`, etc.)
+- **returns:** `{ error?: SafeEnvError, parsed?: Record<string, string> }`
 
-### configMultiple(configs: SafeEnvConfig[]): SafeEnvResult[]
+### `configMultiple(configs: SafeEnvConfig[]): SafeEnvResult[]`
 
-- Validates and returns results for each config in array.
-
----
+- Validates multiple env files and returns an array of results, one for each configuration.
 
 ## 🔍 What does it check?
 
@@ -82,6 +98,8 @@ const results = configMultiple([{ path: './.env' }, { path: './.db.env' }]);
 2. <b>Undocumented vars:</b> Is every real var documented in .env.example?
 3. <b>Duplicate values:</b> Does any documented variable have the same value in both files? (Helps
    catch copy-pasting errors.)
+4. <b>gitignore validation:</b> If your original env file is in gitignore and your document env file
+   is not.
 
 ---
 
