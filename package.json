@@ -1,5 +1,5 @@
 {
-  "name": "dotenv-safer",
+  "name": "dotenv-guardian",
   "description": "Safe .env loader that validates environment variables against a documented example file",
   "repository": {
     "type": "git",
