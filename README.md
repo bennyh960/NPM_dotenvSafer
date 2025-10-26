@@ -1,4 +1,4 @@
-# safe-env-validator
+# Dotenv-Guardian
 
 A minimal, TypeScript-first library built as an extension of
 [dotenv](https://www.npmjs.com/package/dotenv) , adding validation and documentation checks for your
@@ -25,9 +25,9 @@ Node.js apps**.
 ## 📦 Installation
 
 ```bash
-npm install safe-env-validator dotenv
+npm install dotenv-guardian
 # or
-yarn add safe-env-validator dotenv
+yarn add dotenv-guardian
 ```
 
 ## 🛠️ Usage
@@ -45,8 +45,8 @@ yarn add safe-env-validator dotenv
 ### Basic validation (TypeScript or CommonJS)
 
 ```typescript
-import { config } from 'safe-env-validator';
-// or: const { config } = require('safe-env-validator');
+import { config } from 'dotenv-guardian';
+// or: const { config } = require('dotenv-guardian');
 
 const result = config({ path: './.env' });
 
@@ -60,7 +60,7 @@ if (result.error) {
 ### Multi-file validation
 
 ```typescript
-import { configMultiple } from 'safe-env-validator';
+import { configMultiple } from 'dotenv-guardian';
 
 const results = configMultiple([{ path: './.env' }, { path: './.db.env' }]);
 ```
@@ -74,21 +74,21 @@ const results = configMultiple([{ path: './.env' }, { path: './.db.env' }]);
 
 ## 🧪 API Reference
 
-### SafeEnvConfig
+### DotenvConfigOptions & GuardianEnvConfig
 
-- Inherits all original `SafeEnvConfig` options from `dotenv` package.
+- GuardianEnvConfig inherits all original `DotenvConfigOptions` options from `dotenv` package.
 - Adds custom variables:
   - `pathSuffix: string` — Specify your documented env file name, e.g., `.env.docs` or
     `.env.template`. (Default: `.example`)
   - `strict: boolean` — Default: `false`. If `true`, validation errors will throw instead of
     returning them.
 
-### `config(options?: SafeEnvConfig): SafeEnvResult`
+### `config(options?: GuardianEnvConfig): GuardianEnvResults`
 
 - **options.path:** Path to your env file (e.g., `.env`, `.redis.env`, etc.)
-- **returns:** `{ error?: SafeEnvError, parsed?: Record<string, string> }`
+- **returns:** `{ error?: GuardianEnvError, parsed?: Record<string, string> }`
 
-### `configMultiple(configs: SafeEnvConfig[]): SafeEnvResult[]`
+### `configMultiple(configs: GuardianEnvConfig[]): GuardianEnvResults[]`
 
 - Validates multiple env files and returns an array of results, one for each configuration.
 
@@ -132,14 +132,14 @@ Add to your .github/workflows/ci.yml:
 
 ```yaml
 - name: Validate environment files
-  run: node -e "require('safe-env-validator').config({ path: './.env' })"
+  run: node -e "require('dotenv-guardian').config({ path: './.env' })"
 ```
 
 ---
 
-## 🔄 Migrating from dotenv or dotenv-safe
+## 🔄 Migrating from dotenv
 
-- Drop-in replacement: swap dotenv.config() for safe-env-validator.config().
+- Drop-in replacement: swap dotenv.config() for dotenv-guardian.config().
 - Extends validation with minimal code change.
 
 ---

@@ -11,4 +11,5 @@
 //   :
 
 import { config } from 'dotenv-safer';
-config({ strict: true });
+// import { config } from './index.js';
+config({ strict: true, path: './.env.db' });

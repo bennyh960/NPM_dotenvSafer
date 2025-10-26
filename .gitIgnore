@@ -8,3 +8,5 @@ temp/
 data/
 
 **.tgz
+
+.env*

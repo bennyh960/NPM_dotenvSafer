@@ -1,17 +1,17 @@
 import type { DotenvConfigOptions } from 'dotenv';
 import type { errorCodeMap } from './constants.js';
-import type { SafeEnvError } from './safeEnvError.js';
+import type { EnvGuardianError } from './guardianError.js';
 
-type safeEnvCustomConfig = {
+type guardianEnvCustomConfig = {
   pathSuffix?: string;
   strict?: boolean;
 };
 
-export type SafeEnvConfig = DotenvConfigOptions & safeEnvCustomConfig;
+export type GuardianEnvConfig = DotenvConfigOptions & guardianEnvCustomConfig;
 
 /** Result mimics Dotenv config return */
-export interface SafeEnvResult {
-  error?: SafeEnvError;
+export interface GuardianEnvResults {
+  error?: EnvGuardianError;
   parsed?: Record<string, string>;
 }
 

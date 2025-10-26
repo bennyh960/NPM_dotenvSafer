@@ -1,13 +1,13 @@
 import type { ErrorCode, ErrorContext } from './types.js';
 
-export class SafeEnvError extends Error {
+export class EnvGuardianError extends Error {
   code: ErrorCode;
   context?: ErrorContext;
   hint?: string;
 
   constructor(message: string, options: { context?: ErrorContext; hint?: string; code: ErrorCode }) {
     super(message);
-    this.name = 'SafeEnvError';
+    this.name = 'GuardianEnvError';
     this.context = options?.context;
     this.hint = options?.hint;
     this.code = options?.code;
@@ -24,7 +24,7 @@ export class SafeEnvError extends Error {
     const gray = (s: string) => this.color(s, 90);
     const bold = (s: string) => this.color(s, 1);
 
-    const header = bold(red('❌ safeEnv Error:'));
+    const header = bold(red(`❌ ${this.name} Error:`));
     const msg = this.message;
 
     const code = `\n${gray('• Code:')} ${gray(this.code)}`;
@@ -38,7 +38,7 @@ export class SafeEnvError extends Error {
     if (strictMode) {
       throw this;
     } else {
-      const warning = this.toString().replace('❌ safeEnv Error:', '⚠️  safeEnv Warning: (strict mode = false) ');
+      const warning = this.toString().replace('❌ GuardianEnvError Error:', '⚠️  GuardianEnvError Warning: (strict mode = false) ');
       console.warn(warning);
     }
   }
