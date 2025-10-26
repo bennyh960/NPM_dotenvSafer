@@ -23,6 +23,19 @@ export function validateGitIgnore(envPath: string, examplePath: string, strict: 
     .map(l => l.trim())
     .filter(Boolean);
 
+  // Basic pattern check
+  const hasBroadEnvRule = lines.some(line => /^\.env\*/.test(line));
+
+  if (hasBroadEnvRule) {
+    const error = new EnvGuardianError(`The .gitignore pattern '.env*' is too broad and ignores both ${envPath} and ${examplePath}.`, {
+      code: '008_ENV_PATTERN_TOO_BROAD',
+      context: errorCodeMap['008_ENV_PATTERN_TOO_BROAD'] ?? 'Overly broad .env* pattern in .gitignore',
+      hint: "Use a more specific pattern like '.env' instead of '.env*' so your documented env file remains tracked.",
+    });
+    error.notify(strict);
+    return;
+  }
+
   const isIgnored = (file: string) => {
     return lines.some(line => {
       if (line.endsWith('/')) line = line.slice(0, -1); // ignore folder slash
@@ -30,8 +43,11 @@ export function validateGitIgnore(envPath: string, examplePath: string, strict: 
     });
   };
 
+  const envIgnored = isIgnored(envPath);
+  const exampleIgnored = isIgnored(examplePath);
+
   // Validate .env is ignored
-  if (!isIgnored(envPath)) {
+  if (!envIgnored) {
     const error = new EnvGuardianError(`${envPath} should be in .gitignore`, {
       code: '006_ENV_NOT_IGNORED',
       context: errorCodeMap['006_ENV_NOT_IGNORED'] ?? 'Env file should be ignored by git',
@@ -42,7 +58,7 @@ export function validateGitIgnore(envPath: string, examplePath: string, strict: 
   }
 
   // Validate .env.example is NOT ignored
-  if (isIgnored(examplePath)) {
+  if (exampleIgnored) {
     const error = new EnvGuardianError(`${examplePath} should NOT be in .gitignore`, {
       code: '007_EXAMPLE_IGNORED',
       context: errorCodeMap['007_EXAMPLE_IGNORED'] ?? 'Documented env file should not be ignored',

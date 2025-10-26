@@ -8,4 +8,5 @@ export const errorCodeMap = {
   '015_GITIGNORE_MISSING': 'No .gitignore file found in project root',
   '006_ENV_NOT_IGNORED': 'Env file is not ignored by git',
   '007_EXAMPLE_IGNORED': 'Documented env file is ignored by git',
+  '008_ENV_PATTERN_TOO_BROAD': 'Gitignore pattern is too broad',
 } as const;

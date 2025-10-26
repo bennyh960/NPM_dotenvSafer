@@ -10,6 +10,6 @@
 //
 //   :
 
-import { config } from 'dotenv-safer';
+import { config } from 'dotenv-guardian';
 // import { config } from './index.js';
 config({ strict: true, path: './.env.db' });
