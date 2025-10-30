@@ -7,8 +7,10 @@ const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
 const { name, version } = pkg;
 
+const tarballFolderName = 'packed_versions_tgz';
 const tgzName = `${name}-${version}.tgz`;
-if (!fs.existsSync(tgzName)) {
+const tgzPath = path.resolve(tarballFolderName, tgzName);
+if (!fs.existsSync(tgzPath)) {
   console.error(`Error: Tarball ${tgzName} not found! Did you forget to run npm auto:pack or test locally?`);
   process.exit(1);
 }

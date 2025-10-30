@@ -10,6 +10,14 @@
 //
 //   :
 
-import { config } from 'dotenv-guardian';
 // import { config } from './index.js';
-config({ strict: true, path: './.env.db' });
+import { config } from 'dotenv-guardian';
+
+// import { config } from './index.ts';
+// config({ strict: true, path: './.env.db', debug: false });
+
+// import { config } from 'dotenv';
+config({ pathSuffix: '.docs', path: '.env.db' });
+console.log('PLAYGROUND ENV TESTING');
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
+console.log('API_KEY:', process.env.x);

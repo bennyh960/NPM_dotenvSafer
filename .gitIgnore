@@ -7,6 +7,7 @@ temp/
 
 data/
 
+packed_versions_tgz/
 **.tgz
 
 .env.db
