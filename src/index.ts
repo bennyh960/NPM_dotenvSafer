@@ -15,7 +15,6 @@ export function config(options: GuardianEnvConfig = {}): GuardianEnvResults {
 
   const envPath = options.path || '.env';
   const examplePath = envPath + envPathSuffix;
-
   if (typeof envPath !== 'string') {
     const error = new EnvGuardianError('Invalid env file path provided', {
       code: '000_400',

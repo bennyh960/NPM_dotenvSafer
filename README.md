@@ -40,7 +40,9 @@ yarn add dotenv-guardian
   - Do **not** include `.env.example` in `.gitignore`.
 
 > For convenience, the default file names are `.env` and `.env.example`, but you can use custom
-> names if desired.
+> names if desired just specify them as follow:
+
+- `config({path:.env.customName,pathSuffix:.documented})`.
 
 ### Basic validation (TypeScript or CommonJS)
 
