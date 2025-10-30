@@ -32,10 +32,11 @@ export function config(options: GuardianEnvConfig = {}): GuardianEnvResults {
   }
 
   if (!fs.existsSync(envPath)) {
-    const error = new EnvGuardianError(`Env file not found at ${envPath}`, { code: '001_404', context: errorCodeMap['001_404'] });
-    if (options.strict) {
-      throw error;
-    }
+    const error = new EnvGuardianError(`Env file not found at ${process.cwd()}`, {
+      code: '001_404',
+      context: errorCodeMap['001_404'],
+    });
+    error.notify(options.strict);
     return {
       error: error,
       parsed: undefined,
@@ -59,8 +60,8 @@ export function config(options: GuardianEnvConfig = {}): GuardianEnvResults {
     };
   }
 
-  const originalEnv = dotenv.config({ path: envPath });
-  const documentedEnv = dotenv.config({ path: examplePath });
+  const originalEnv = dotenv.config({ path: envPath, ...options });
+  const documentedEnv = dotenv.config({ path: examplePath, quiet: true });
 
   const originalEnvParsed = originalEnv.parsed || {};
   const documentedEnvParsed = documentedEnv.parsed || {};
