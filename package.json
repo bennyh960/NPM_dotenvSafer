@@ -16,14 +16,13 @@
     "validation",
     "safe-env"
   ],
-  "type": "module",
+  "type": "commonjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "dist/index.d.ts",
-  "main": "index.js",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    }
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.js"
   },
   "files": [
     "dist/",
@@ -37,8 +36,9 @@
     "build": "tsc && rimraf dist/dev_only && rimraf dist/playground.js && rimraf dist/playground.js.map && rimraf dist/playground.d.ts",
     "prepublishOnly": "npm run build",
     "build:watch": "tsc --watch",
+    "release": "standard-version",
     "start": "npm run build && node dist/index.js",
-    "deploy": "npm run build && node ./scripts/check-tgz.js && npm version patch  && npm publish && git push",
+    "deploy": "npm run build && node ./scripts/check-tgz.js && npm run release  && npm publish && git push",
     "deployLocal": "node ./scripts/deploy-local.js",
     "test": "jest"
   },
@@ -49,6 +49,7 @@
     "jest": "^30.0.5",
     "nodemon": "^3.1.10",
     "rimraf": "^6.0.1",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
