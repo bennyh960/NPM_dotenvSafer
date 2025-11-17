@@ -1,7 +1,7 @@
 // scripts/deploy-local.js
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
 // 1️⃣ Read package.json to get name and version
 const pkgPath = path.resolve('./package.json');
