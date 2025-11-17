@@ -134,3 +134,8 @@ export function config(options: GuardianEnvConfig = {}): GuardianEnvResults {
 export function configMultiple(configs: GuardianEnvConfig[] = []): GuardianEnvResults[] {
   return configs.map(cfg => config(cfg));
 }
+
+export default {
+  config,
+  configMultiple,
+};
