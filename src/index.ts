@@ -14,6 +14,13 @@ export function config(options: GuardianEnvConfig = {}): GuardianEnvResults {
 
   const envPath = options.path || '.env';
   const examplePath = envPath + envPathSuffix;
+
+  // Skip validation if in production/serverless environment
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod') {
+    console.log('⚠️  Running in production - skipping .env file validation');
+    return { error: undefined, parsed: process.env as any };
+  }
+
   if (typeof envPath !== 'string') {
     const error = new EnvGuardianError('Invalid env file path provided', {
       code: '000_400',
