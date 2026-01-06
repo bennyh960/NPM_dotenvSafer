@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/bennyh960/NPM_dotenvSafer/compare/v1.1.3...v2.0.0) (2026-01-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* Package structure changed - now outputs to dist/cjs and dist/esm directories
+
+### Bug Fixes
+
+* add dual ESM/CommonJS support to prevent Vercel deployment errors ([8541439](https://github.com/bennyh960/NPM_dotenvSafer/commit/85414392b39e71dffbbc304241c4666910c8f77a))
+
 ## [1.1.0](https://github.com/bennyh960/NPM_dotenvSafer/compare/v1.0.5...v1.1.0) (2025-11-17)
 
 
