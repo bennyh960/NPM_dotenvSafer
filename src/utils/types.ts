@@ -1,6 +1,6 @@
 import type { DotenvConfigOptions } from 'dotenv';
-import type { errorCodeMap } from './constants.js';
-import type { EnvGuardianError } from './guardianError.js';
+import type { errorCodeMap } from './constants';
+import type { EnvGuardianError } from './guardianError';
 
 type guardianEnvCustomConfig = {
   pathSuffix?: string;

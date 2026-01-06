@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { EnvGuardianError } from './guardianError.js';
-import { errorCodeMap } from './constants.js';
+import { EnvGuardianError } from './guardianError';
+import { errorCodeMap } from './constants';
 
 export function validateGitIgnore(envPath: string, examplePath: string, strict: boolean = true): void {
   const gitignorePath = path.join(process.cwd(), '.gitignore');

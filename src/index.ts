@@ -1,9 +1,9 @@
 import fs from 'fs';
 import dotenv from 'dotenv';
-import type { GuardianEnvResults, GuardianEnvConfig } from './utils/types.js';
-import { EnvGuardianError } from './utils/guardianError.js';
-import { errorCodeMap } from './utils/constants.js';
-import { validateGitIgnore } from './utils/gitignoreValidation.js';
+import type { GuardianEnvResults, GuardianEnvConfig } from './utils/types';
+import { EnvGuardianError } from './utils/guardianError';
+import { errorCodeMap } from './utils/constants';
+import { validateGitIgnore } from './utils/gitignoreValidation';
 
 /**
  * Validates the environment variables against the documented example,

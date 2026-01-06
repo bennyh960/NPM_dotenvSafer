@@ -17,14 +17,14 @@
     "safe-env"
   ],
   "type": "commonjs",
-  "module": "./dist/index.js",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "files": [
@@ -37,13 +37,18 @@
     "dev": "nodemon --exec \"tsc --noEmit && tsx src/index.ts\"",
     "dev:playground": "nodemon --config nodemon.playground.json",
     "dev:fast": "nodemon --exec tsx src/index.ts",
-    "build": "tsc && rimraf dist/dev_only && rimraf dist/playground.js && rimraf dist/playground.js.map && rimraf dist/playground.d.ts",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build": "rimraf dist && npm run build:cjs && npm run build:esm && npm run build:types && npm run clean:dev",
+    "clean:dev": "rimraf dist/dev_only && rimraf dist/playground.js && rimraf dist/playground.js.map && rimraf dist/playground.d.ts",
+    "build:deprecated": "tsc && rimraf dist/dev_only && rimraf dist/playground.js && rimraf dist/playground.js.map && rimraf dist/playground.d.ts",
     "prepublishOnly": "npm run build",
     "build:watch": "tsc --watch",
     "release": "standard-version",
     "start": "npm run build && node dist/index.js",
     "deploy": "npm run build && node ./scripts/check-tgz.js && npm run release  && npm publish && git push",
-    "deployLocal": "node ./scripts/deploy-local.js",
+    "deployLocal": "npm uninstall dotenv-guardian && npm run build && node ./scripts/deploy-local.js",
     "deploy:quick": "npm run build && npm version patch && npm publish",
     "test": "jest"
   },

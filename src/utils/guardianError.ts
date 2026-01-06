@@ -1,4 +1,4 @@
-import type { ErrorCode, ErrorContext } from './types.js';
+import type { ErrorCode, ErrorContext } from './types';
 
 export class EnvGuardianError extends Error {
   code: ErrorCode;

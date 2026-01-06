@@ -11,9 +11,9 @@
 //   :
 
 // import { config } from './index.js';
-// import { config } from 'dotenv-guardian';
+import { config } from 'dotenv-guardian';
 
-import { config } from './index.js';
+// import { config } from './index';
 // config({ strict: true, path: './.env.db', debug: false });
 
 // import { config } from 'dotenv';
