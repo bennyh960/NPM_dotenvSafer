@@ -19,6 +19,7 @@ Node.js apps**.
 - **Strict mode:** Optional mode to throw errors or exit the process if validation fails.
 - **Gitignore validation:** Ensures `.env` is ignored in Git while `.env.example` is included,
   helping teams avoid committing secrets.
+- **Dual module support:** Works with both CommonJS and ESM projects out of the box.
 
 ---
 

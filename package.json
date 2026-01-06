@@ -47,7 +47,7 @@
     "build:watch": "tsc --watch",
     "release": "standard-version",
     "start": "npm run build && node dist/index.js",
-    "deploy": "npm run build && node ./scripts/check-tgz.js && npm run release  && npm publish && git push",
+    "deploy": "npm run build && node ./scripts/check-tgz.js && npm run release  && npm publish && git push --follow-tags",
     "deployLocal": "npm uninstall dotenv-guardian && npm run build && node ./scripts/deploy-local.js",
     "deploy:quick": "npm run build && npm version patch && npm publish",
     "test": "jest"
